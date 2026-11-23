@@ -1,0 +1,43 @@
+{
+  "id": "awf-project-context",
+  "name": "Project Context",
+  "description": "Agent-scoped project context with capture, checkpoints and lifecycle for OpenClaw workspaces",
+  "categories": [
+    "productivity"
+  ],
+  "uiCapabilities": [],
+  "contracts": {
+    "tools": [
+      "awf_project"
+    ]
+  },
+  "toolMetadata": {
+    "awf_project": {
+      "sideEffecting": true
+    }
+  },
+  "activation": {
+    "onCapabilities": [
+      "hook"
+    ]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": false
+      },
+      "staleContextDays": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 14
+      },
+      "autoLoadOnMention": {
+        "type": "boolean",
+        "default": false
+      }
+    }
+  }
+}

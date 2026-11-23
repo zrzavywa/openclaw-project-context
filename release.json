@@ -1,0 +1,83 @@
+{
+  "schema": "awf.project-release.v1",
+  "name": "@zrzavywa/openclaw-project-context",
+  "version": "0.13.0",
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 23056,
+      "sha256": "cb27a44c4b32043f09a12e45df7f2b0c58f0567bf88b702de32a3c835618674e"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1070,
+      "sha256": "8b0a856dcef66429de97a96ef6e6372b71c9736ff940ed7922e59c462beedd34"
+    },
+    {
+      "path": "README.md",
+      "bytes": 26608,
+      "sha256": "55c9b97f20dcc7170dd87ce07c92bb1af6c56ff9d328cdafbcec64d77aba43fe"
+    },
+    {
+      "path": "SECURITY.md",
+      "bytes": 1056,
+      "sha256": "1e24ee7008d3d6bc7cbc7fa6a38be4330a1ad6ba7e79ef513e6eb228f3d82452"
+    },
+    {
+      "path": "index.mjs",
+      "bytes": 22137,
+      "sha256": "87755125bddfbab8e57eab8fa5d4e7880b661ad533a31bca98b3249ea5d582f8"
+    },
+    {
+      "path": "openclaw.plugin.json",
+      "bytes": 836,
+      "sha256": "dece847627525dfb40607686e644aed754d0092a777574c3bbad18cd02b565ed"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1378,
+      "sha256": "9ed7c6a4ac2f7cbfa805f58d345da2d37c8c3d05232dc06843312f8559530228"
+    },
+    {
+      "path": "project-codex-link.mjs",
+      "bytes": 4786,
+      "sha256": "8c0b234d10f51722928a316a9f0d387df71410af0945cb475619136fb4dab726"
+    },
+    {
+      "path": "project-commands.mjs",
+      "bytes": 79750,
+      "sha256": "145f3042cabb97da03d75f15f1a4c7c8cdeeb92cdd1739935609dff9bf7027fc"
+    },
+    {
+      "path": "project-config.mjs",
+      "bytes": 6377,
+      "sha256": "b3ece7f64bc87909f76cbb66ee6649bdee6983457cb1d341b60b83481446e9d6"
+    },
+    {
+      "path": "project-creation.mjs",
+      "bytes": 18949,
+      "sha256": "17607db531af4787f3de6b560c6759123914f25e9b3aab2dcca1a8aa48b40243"
+    },
+    {
+      "path": "project-helpers.mjs",
+      "bytes": 18987,
+      "sha256": "be866a0c2f7b8512b27c6d124b4a17f7bc555fc6bf458a2e0cbf9f2c8a4cf29c"
+    },
+    {
+      "path": "project-lifecycle.mjs",
+      "bytes": 29918,
+      "sha256": "1d4ce5415f05ad3f8ff4171efe4949fa93db1ea829cbfb598b756522c496075b"
+    },
+    {
+      "path": "project-memory.mjs",
+      "bytes": 13786,
+      "sha256": "de743cdb62620a94e3dcbe2d99935c4a46543ce08a53263d8b59603dbfca6a9a"
+    },
+    {
+      "path": "project-release.mjs",
+      "bytes": 8024,
+      "sha256": "fb86cabde1beed86d5eb322b3a80c33f652ed7e5b7e6b0eecbf081a5d4c86968"
+    }
+  ],
+  "digest": "e8b5f0c95dc18a6d995410bc174ae6c8ae7037c70eebf0b5d85a84626cb76a4f"
+}
