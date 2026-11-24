@@ -7,6 +7,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { describeLoadState, parseLoadedVersionFromLog } from './project-runtime.mjs';
 
 const args = process.argv.slice(2);
 const has = (flag) => args.includes(flag);
@@ -38,6 +39,25 @@ function installedVersion() {
     try { return JSON.parse(readFileSync(file, 'utf8')).version; } catch { /* try next */ }
   }
   return 'nicht installiert';
+}
+
+function loadedVersion() {
+  // The plugin writes a load marker on register; the newest marker is the running generation.
+  const stateDir = process.env.OPENCLAW_STATE_DIR || path.join(os.homedir(), '.openclaw');
+  const logsRoot = path.join(stateDir, 'logs');
+  let files = [];
+  try { files = readdirSync(logsRoot).filter((n) => /^openclaw-\\d{4}-\\d{2}-\\d{2}\\.log$/u.test(n)).sort().reverse().slice(0, 2); }
+  catch { return 'UNKNOWN'; }
+  for (const name of files) {
+    try {
+      const found = parseLoadedVersionFromLog(readFileSync(path.join(logsRoot, name), 'utf8'));
+      if (found) {
+        const state = describeLoadState({ loadedVersion: found, installedVersion: installedVersion() });
+        return state.status === 'loaded' ? found : `${found} (MISMATCH, installiert ${state.installedVersion})`;
+      }
+    } catch { /* unreadable log is not a verdict */ }
+  }
+  return 'UNKNOWN';
 }
 
 function projectStats(workspaceDir) {
@@ -84,6 +104,7 @@ const rows = [
   ['Spiegel', online.mirror],
   ['Katalog', online.catalog],
   ['Installiert', installedVersion()],
+  ['Geladen', loadedVersion()],
 ];
 if (stats) rows.push(['Projekte', `${stats.active} aktiv, ${stats.archive ?? stats.archives} Archive`]);
 

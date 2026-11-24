@@ -21,6 +21,7 @@ import { PROJECT_STATE_SCHEMA, PROJECT_STATUSES, readProjectState, transitionPro
 import { readProjectCodexLink, writeProjectCodexLink, removeProjectCodexLink, validateCodexRoot } from './project-codex-link.mjs';
 import { PROJECT_SNAPSHOT_MAX_BYTES, readProjectMemoryRecords, saveApprovedProjectMemory } from './project-memory.mjs';
 import { inspectReleaseDirectory } from './project-release.mjs';
+import { LOAD_MARKER_PREFIX, describeLoadState, readInstalledVersion } from './project-runtime.mjs';
 import { PLUGIN_ROOT, LOADED_VERSION, CONTEXT_FILES, MAX_PROJECT_FILE_BYTES, MAX_REVIEW_BYTES, PROMPT_CONTEXT_MAX_BYTES, PROMPT_REFERENCE_MAX_BYTES, REVIEW_TTL_MS, SELECTION_TTL_MS, assertCommandAuthority, budgetedSection, canonicalWorkspace, contextDiagnostic, contextErrorCode, findCodexWorkspaceProject, formatProjectCard, isAutoLinkClearCurrent, isSelectionCurrent, listProjects, makeAutoLinkClear, makeSelection, readOptionalProjectFile, readProjectFile, resolveSelectedProject, safeSummary, selectionIdentity, sha256, truncateUtf8 } from './project-helpers.mjs';
 import { prepareWorkspaceProjectCommands, resultOk } from './project-commands.mjs';
 export { prepareWorkspaceProjectCommands };
@@ -30,6 +31,8 @@ export { prepareWorkspaceProjectCommands };
 export default function register(api) {
   if (api?.pluginConfig?.enabled !== true) return;
   const log = api?.logger ?? console;
+  // Loaded-version marker: the CLI verify script compares this line with the installed package.
+  try { log.info?.(`${LOAD_MARKER_PREFIX} ${LOADED_VERSION ?? 'unknown'}`); } catch { /* logging is best effort */ }
   const selectionOptions = { namespace: 'awf-project-conversation-selection-v1', maxEntries: 2000,
     overflowPolicy: 'reject-new', defaultTtlMs: SELECTION_TTL_MS };
   const selectionStore = api.runtime.state.openKeyedStoreV2(selectionOptions);
@@ -54,6 +57,8 @@ export default function register(api) {
     projectConfigStore, projectConfigStoreForCommand,
     pluginLoadPaths: () => api.runtime.config.current()?.plugins?.load?.paths ?? [],
     autoLoadOnMention: () => api.pluginConfig?.autoLoadOnMention === true,
+    runtimeState: () => describeLoadState({ loadedVersion: LOADED_VERSION,
+      installedVersion: readInstalledVersion(`${PLUGIN_ROOT}/package.json`) }),
     retentionDays: () => { const value = api.pluginConfig?.retentionDays; return Number.isInteger(value) ? value : 180; },
     staleContextDays: () => {
       const configured = Number(api.pluginConfig?.staleContextDays);

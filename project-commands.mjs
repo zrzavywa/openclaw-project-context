@@ -27,6 +27,7 @@ import { readProjectCodexLink, writeProjectCodexLink, removeProjectCodexLink, va
 import { PROJECT_SNAPSHOT_MAX_BYTES, PROJECT_RECORD_MAX_BYTES, readProjectMemoryRecords, saveApprovedProjectMemory,
   listProjectHistory, recordTimestamp } from './project-memory.mjs';
 import { inspectReleaseDirectory } from './project-release.mjs';
+import { describeLoadState, formatLoadStateLine } from './project-runtime.mjs';
 import { PLUGIN_ROOT, LOADED_VERSION, invalidateCodexLinkCache, CONTEXT_FILES, MAX_PROJECT_FILE_BYTES, MAX_REVIEW_BYTES, PROMPT_CONTEXT_MAX_BYTES, PROMPT_REFERENCE_MAX_BYTES, REVIEW_TTL_MS, SELECTION_TTL_MS, assertCommandAuthority, budgetedSection, canonicalWorkspace, contextDiagnostic, contextErrorCode, findCodexWorkspaceProject, formatProjectCard, isAutoLinkClearCurrent, isSelectionCurrent, listProjects, makeAutoLinkClear, makeSelection, readOptionalProjectFile, readProjectFile, resolveSelectedProject, safeSummary, selectionIdentity, sha256, truncateUtf8,
   formatCaptureDiff, projectContextAgeDays, matchesAllTerms, searchExcerpt, matchProjectMentions,
   mentionAudienceAuthorized, audienceStillCurrent } from './project-helpers.mjs';
@@ -77,6 +78,7 @@ export function prepareWorkspaceProjectCommands({ selectionStore, selectionStore
   reviewStore, reviewStoreForCommand, repairStoreForCommand, transferStoreForCommand,
   projectConfigStore, projectConfigStoreForCommand, resolveWorkspaceDir,
   pluginLoadPaths = () => [], staleContextDays = () => 14, autoLoadOnMention = () => false,
+  runtimeState = () => ({ status: 'unknown' }),
   retentionDays = () => 180,
   now = () => new Date() }) {
   // One stale-context hint per project and day keeps the notice out of every turn.
@@ -966,7 +968,7 @@ export function prepareWorkspaceProjectCommands({ selectionStore, selectionStore
           return { text: `**Kein Projekt aktiv**\n\n- **Agent:** ${ctx.agentId}\n- **Gespräch:** aktuelles Gespräch\n- **Grund:** \`state-generation-changed\`\n\nDer Projektstatus hat sich geändert. Wähle es erneut aus, falls es aktiv ist.` };
         }
         const displayName = /^#\s+([^\r\n]+)/mu.exec(project.referenz)?.[1]?.trim() ?? selected.displayId;
-        return { text: formatProjectCard({ ...selected, displayName, codexLink: project.codexLink }, ctx.agentId) };
+        return { text: `${formatProjectCard({ ...selected, displayName, codexLink: project.codexLink }, ctx.agentId)}\n${formatLoadStateLine(runtimeState())}` };
       } catch { return { text: 'Projektstatus nicht verfügbar.' }; }
     },
     async prepareSummary(ctx, kind) {

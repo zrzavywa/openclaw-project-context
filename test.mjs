@@ -12,6 +12,8 @@ import { readProjectMemoryRecords, saveApprovedProjectMemory } from './project-m
 import { computeReleaseManifest, inspectReleaseDirectory, verifyReleaseManifest, writeReleaseManifest } from './project-release.mjs';
 import { replaceProjectSnapshotAtomically } from './project-memory.mjs';
 import { formatCaptureDiff, PLUGIN_ROOT } from './project-helpers.mjs';
+import { describeLoadState, formatLoadStateLine, parseLoadedVersionFromLog } from './project-runtime.mjs';
+import { spawnSync } from 'node:child_process';
 
 const tempRoot = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'awf-project-context-')));
 const workspaces = {
@@ -248,6 +250,17 @@ try {
   assert.equal((await commands.doctor(main)).text.includes('Warnungen: 0'), true,
     'doctor confirms the safe permission repair');
 
+  // G1/G2/G5: Ladezustand wird als geladen, MISMATCH oder UNKNOWN ausgewiesen
+  assert.equal(describeLoadState({ loadedVersion: '1.2.3', installedVersion: '1.2.3' }).status, 'loaded', 'G1: equal versions are loaded');
+  const mismatch = describeLoadState({ loadedVersion: '1.2.2', installedVersion: '1.2.3' });
+  assert.equal(mismatch.status, 'pending-restart', 'G2: differing versions need a restart');
+  assert.match(formatLoadStateLine(mismatch), /MISMATCH — geladen 1\.2\.2, installiert 1\.2\.3/u, 'G2: both versions are named');
+  assert.match(formatLoadStateLine(describeLoadState({ loadedVersion: '1.2.3', installedVersion: '1.2.3' })), /geladen 1\.2\.3/u);
+  assert.equal(describeLoadState({}).status, 'unknown', 'G5: missing data is UNKNOWN, not PASS');
+  assert.match(formatLoadStateLine({ status: 'unknown' }), /UNKNOWN/u);
+  assert.equal(parseLoadedVersionFromLog('awf-project-context loaded 0.16.0\nawf-project-context loaded 0.16.1'), '0.16.1',
+    'the newest marker wins');
+  assert.equal(parseLoadedVersionFromLog('no marker here'), null);
   const captureDraft = await commands.proposeSummary(main, '## Aktueller Stand\n- Ziel: Projektkontext sicherstellen.\n\n## Neue Beschlüsse dieses Gesprächs\n- Nur freigegebene Projektdateien laden.');
   assert.match(captureDraft.text, /Vorschau – noch nicht gespeichert/u);
   assert.match(captureDraft.text, /\/project capture confirm/u);
@@ -306,6 +319,25 @@ try {
     'confirmed closeout has already cleared the active selection');
   assert.equal(await commands.hook({}, main), undefined, 'cleared selection stops context injection');
 
+  // G3/G4: verify:loaded liefert PASS/FAIL/UNKNOWN per Exitcode und braucht kein Netz
+  const verifyRoot = path.join(tempRoot, 'verify-state');
+  mkdirSync(path.join(verifyRoot, 'extensions', 'awf-project-context'), { recursive: true });
+  mkdirSync(path.join(verifyRoot, 'logs'), { recursive: true });
+  writeFileSync(path.join(verifyRoot, 'extensions', 'awf-project-context', 'package.json'), JSON.stringify({ version: '9.9.9' }));
+  const verifyScript = path.join(PLUGIN_ROOT, 'project-verify-loaded.mjs');
+  const runVerify = () => spawnSync(process.execPath, [verifyScript], { encoding: 'utf8',
+    env: { ...process.env, OPENCLAW_STATE_DIR: verifyRoot, HTTP_PROXY: 'http://127.0.0.1:1', HTTPS_PROXY: 'http://127.0.0.1:1' } });
+  const unknownRun = runVerify();
+  assert.equal(unknownRun.status, 2, 'G3/G5: no marker means UNKNOWN with exit 2');
+  assert.match(unknownRun.stdout, /UNKNOWN/u);
+  writeFileSync(path.join(verifyRoot, 'logs', 'openclaw-2026-11-24.log'), 'x\nawf-project-context loaded 9.9.9\n');
+  const passRun = runVerify();
+  assert.equal(passRun.status, 0, 'G3/G4: matching marker passes without network');
+  assert.match(passRun.stdout, /PASS/u);
+  writeFileSync(path.join(verifyRoot, 'logs', 'openclaw-2026-11-24.log'), 'x\nawf-project-context loaded 9.9.8\n');
+  const failRun = runVerify();
+  assert.equal(failRun.status, 1, 'G3: older marker fails');
+  assert.match(failRun.stdout, /FAIL/u);
   rmSync(contextPath);
   symlinkSync(path.join(workspaces.privat, 'projects', 'missing-private-file'), contextPath);
   assert.equal(await commands.hook({}, restartedTurn), undefined, 'symlink context source is denied');

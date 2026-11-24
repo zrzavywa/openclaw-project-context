@@ -1,12 +1,12 @@
 {
   "schema": "awf.project-release.v1",
   "name": "@zrzavywa/openclaw-project-context",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 28666,
-      "sha256": "e7c0a7daf8f7519db1bec79f214303c43a3303ac5b41dc8369e9a4234b7207c8"
+      "bytes": 29451,
+      "sha256": "949acb248a2ff4688b9c71fbb4fbb9e93be81a3f57cb39a00ce1f71a739bc651"
     },
     {
       "path": "LICENSE",
@@ -25,8 +25,8 @@
     },
     {
       "path": "index.mjs",
-      "bytes": 22433,
-      "sha256": "8504db19d5d64702aa921910f3d20396774775d6b5629901843b966460c426c4"
+      "bytes": 22903,
+      "sha256": "471395e93c51a3a5a9d6b1d1b719dfc928da07e60a3cadef0973c156e4618131"
     },
     {
       "path": "openclaw.plugin.json",
@@ -35,8 +35,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 1445,
-      "sha256": "fc5f6d3b3e463920fde769e6a0aa87462a7b03b5319a38ce708c13c136744397"
+      "bytes": 1560,
+      "sha256": "dca2f54fbff59025302c5f811e8b3b292deb9a39456530cbb729ce5614a37189"
     },
     {
       "path": "project-codex-link.mjs",
@@ -45,8 +45,8 @@
     },
     {
       "path": "project-commands.mjs",
-      "bytes": 87402,
-      "sha256": "62eb7db1e3eb70b2d909951d18b17d170f21f72e0e6cd95da69f6d6968091dc3"
+      "bytes": 87575,
+      "sha256": "856f60af69a9969535a0d6035eb41eaf53a17bcb95942de417aa0a25904cb6f6"
     },
     {
       "path": "project-config.mjs",
@@ -79,10 +79,20 @@
       "sha256": "fb86cabde1beed86d5eb322b3a80c33f652ed7e5b7e6b0eecbf081a5d4c86968"
     },
     {
+      "path": "project-runtime.mjs",
+      "bytes": 1793,
+      "sha256": "ab6558992c96e7ab10e68001da8e63125b49773f9a4b1ffd6d0a4234a893995b"
+    },
+    {
       "path": "project-status.mjs",
-      "bytes": 4122,
-      "sha256": "6b6356e3da763b787e9a5b96519500184eec86aa358f9fea0c7d440c2e05939a"
+      "bytes": 5145,
+      "sha256": "f7b39fb7bb0e588cd6673c2602d73367258e9e81b0991a999489ceb6548bc025"
+    },
+    {
+      "path": "project-verify-loaded.mjs",
+      "bytes": 2067,
+      "sha256": "99853ce07cb95f01db8b14fb0a5833e30e14a311d3e717f99b74369fc775d681"
     }
   ],
-  "digest": "93f743ff6b50220dbb7f3700a80aac402460f4a0c84e13ea6f53350488d3c132"
+  "digest": "706d43d1066ba3d5b2e9bbe69219f93e79221d55af483c8ca94aec04c4f6a353"
 }

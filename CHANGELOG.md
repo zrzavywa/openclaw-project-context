@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.16.1] - 2026-11-24
+
+### Added
+
+- The project status card now reports the running generation next to the installed one:
+  `Laufzeit: geladen <a>, installiert <b>` or `MISMATCH` when the files on disk are newer than the loaded
+  code. The loaded value comes from the module-load constant, so a queued replacement cannot be mistaken
+  for an active one.
+- `npm run verify:loaded` checks the newest `awf-project-context loaded <version>` marker in the gateway
+  log against the installed package and exits 0 (`PASS`), 1 (`FAIL`, restart pending) or 2 (`UNKNOWN`).
+  Read-only, no network.
+- `npm run status` gained a `Geladen` row using the same marker, with `MISMATCH` spelled out.
+- Tests G1-G5 cover equal/differing/missing versions, the marker parser and the three exit codes.
+
+
 ## [0.16.0] - 2026-11-24
 
 ### Fixed

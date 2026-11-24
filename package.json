@@ -1,6 +1,6 @@
 {
   "name": "@zrzavywa/openclaw-project-context",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "private": false,
   "license": "MIT",
   "description": "Agent-scoped project context for OpenClaw",
@@ -21,7 +21,8 @@
     "check:changelog": "node check-changelog.mjs",
     "release:manifest": "node project-release.mjs --write .",
     "release:verify": "node project-release.mjs --verify .",
-    "status": "node project-status.mjs"
+    "status": "node project-status.mjs",
+    "verify:loaded": "node project-verify-loaded.mjs"
   },
   "files": [
     "index.mjs",
@@ -34,6 +35,8 @@
     "project-memory.mjs",
     "project-release.mjs",
     "project-status.mjs",
+    "project-runtime.mjs",
+    "project-verify-loaded.mjs",
     "release.json",
     "openclaw.plugin.json",
     "README.md",
