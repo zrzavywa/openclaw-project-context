@@ -821,8 +821,8 @@ try {
   assert.equal(JSON.parse(readFileSync(exportPath, 'utf8')).captures.length, archive.captures.length, 'E10: the round trip keeps the capture count');
   assert.equal(JSON.parse(readFileSync(exportPath, 'utf8')).decisions.length, archive.decisions.length, 'E10: the round trip keeps the decision count');
 
-  const foreignCtx = { ...main, senderIsOwner: false };
-  assert.match((await commands.exportProject(foreignCtx, exportSourceCode)).text, /Owner-Befehl|authentifizierten Owner/u, 'E11: export requires owner authority');
+  const exportNonOwnerCtx = { ...main, senderIsOwner: false };
+  assert.match((await commands.exportProject(exportNonOwnerCtx, exportSourceCode)).text, /Owner-Befehl|authentifizierten Owner/u, 'E11: export requires owner authority');
 
 
   // --- 0.13.0 acceptance tests M1-M10 (mention loading) --------------------
@@ -883,6 +883,31 @@ try {
   const m10 = await mentionCommands.hook({ currentUserMessage: 'Wie steht es um das Raketenprogramm?' }, main);
   assert.doesNotMatch(m10?.prependContext ?? '', /automatisch geladen/u, 'M10: archived projects are not auto-loaded [' + mentionACode + '] ' + String(m10?.prependContext ?? '').slice(0, 160));
 
+
+  // --- 0.15.4 acceptance tests Z1-Z5 (mention authorization) --------------
+  const zuluOne = await commands.createProject(main, 'Zulu Programm');
+  const zuluTwo = await commands.createProject(main, 'Zulu Basis');
+  const zuluCode = /Erstellt und ausgewählt: ([A-Z]\d+)/u.exec(zuluOne.text)?.[1];
+  const zuluRoot = ((/Workspace: (\S+)/u.exec(zuluOne.text)?.[1]) ?? '').replace(/\.$/u, '') || undefined;
+  assert.ok(zuluCode && zuluRoot, 'the authorization fixture exists');
+  writeFileSync(path.join(zuluRoot, 'KONTEXT.md'), '# Kontext\n\nZulu Startfenster im Juni.\n', { mode: 0o600 });
+  const zuluMentionCtx = { ...main, senderIsOwner: false, sessionKey: 'channel:main:thread-zulu', sessionId: 'session-zulu',
+    memoryAudience: { kind: 'conversation', agentId: 'main', sessionKey: 'channel:main:thread-zulu', sessionId: 'session-zulu' } };
+  const z1 = await mentionCommands.hook({ currentUserMessage: 'Wie steht es um das Zulu Programm?' }, zuluMentionCtx);
+  assert.equal(z1, undefined, 'Z1: a non-owner conversation loads nothing on a mentioned name');
+  const z2 = await mentionCommands.hook({ currentUserMessage: 'Zulu kurz zusammenfassen' }, zuluMentionCtx);
+  assert.equal(z2, undefined, 'Z2: an ambiguous mention reveals no project inventory to a non-owner');
+  const ownerBit = await mentionCommands.hook({ currentUserMessage: 'Wie steht es um das Zulu Programm?' }, { ...zuluMentionCtx, senderIsOwner: true });
+  assert.match(ownerBit?.prependContext ?? '', /automatisch geladen/u, 'Z3: the host owner bit still loads the context');
+  const ownerAudience = await mentionCommands.hook({ currentUserMessage: 'Wie steht es um das Zulu Programm?' },
+    { ...zuluMentionCtx, memoryAudience: { kind: 'owner-private', agentId: 'main' } });
+  assert.match(ownerAudience?.prependContext ?? '', /automatisch geladen/u, 'Z4: an owner-private audience loads the context');
+  const revoked = await mentionCommands.hook({ currentUserMessage: 'Wie steht es um das Zulu Programm?' },
+    { ...zuluMentionCtx, memoryAudience: { kind: 'owner-private', agentId: 'main' }, assertMemoryAudienceCurrent() { throw new Error('revoked'); } });
+  assert.equal(revoked, undefined, 'Z5: a revoked audience publishes no context');
+  const zuluTwoCode = /Erstellt und ausgewählt: ([A-Z]\d+)/u.exec(zuluTwo.text)?.[1];
+  await commands.changeProjectStatus(main, zuluCode, 'archived');
+  if (zuluTwoCode) await commands.changeProjectStatus(main, zuluTwoCode, 'archived');
 
   // --- 0.14.0 acceptance tests R1-R8 (retention) and D1-D6 (export digest) ---
   const retentionCreated = await commands.createProject(main, 'Retention Fixture');

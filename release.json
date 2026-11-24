@@ -1,12 +1,12 @@
 {
   "schema": "awf.project-release.v1",
   "name": "@zrzavywa/openclaw-project-context",
-  "version": "0.15.3",
+  "version": "0.15.4",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 26972,
-      "sha256": "84716feaab7a4ec0213aed76239499e63acc4292dc45963798126031a25c0f80"
+      "bytes": 28054,
+      "sha256": "c91f31cdc1bd4ee080d6cb1c005d1a287346f2123a4b5376a1afcd518f5cb4c8"
     },
     {
       "path": "LICENSE",
@@ -36,7 +36,7 @@
     {
       "path": "package.json",
       "bytes": 1445,
-      "sha256": "abee87d5a7b3389f1c1f06fdb6d90403523c639a8e09dc33c97fd20c23b7f8be"
+      "sha256": "c7eec67fdd3d64bfa1cbe34d3130533f22cd02c697f20c2c4d4846b82064c706"
     },
     {
       "path": "project-codex-link.mjs",
@@ -45,8 +45,8 @@
     },
     {
       "path": "project-commands.mjs",
-      "bytes": 84607,
-      "sha256": "2b14b519a48e607429f6d845a5512585e1819de9072829a79cf41e79e4b93350"
+      "bytes": 85068,
+      "sha256": "6772bccd1301ee1b1bf2e0ac258076f11f86c88cf990b04db28ede1cc600c5c6"
     },
     {
       "path": "project-config.mjs",
@@ -60,8 +60,8 @@
     },
     {
       "path": "project-helpers.mjs",
-      "bytes": 19986,
-      "sha256": "563002c7f132cef68c952542ff90cc6a36aa8cc734293bd5f647f0e0d5af623c"
+      "bytes": 20927,
+      "sha256": "0cb997009b5a3dbd2bb7a73904990542ae27031e3752ea3b129a4e6369c1b1c2"
     },
     {
       "path": "project-lifecycle.mjs",
@@ -84,5 +84,5 @@
       "sha256": "6b6356e3da763b787e9a5b96519500184eec86aa358f9fea0c7d440c2e05939a"
     }
   ],
-  "digest": "8b27ce8bc2c94d663bca8616b5efb02c7803dc0776b0d17a7d751ebde82595da"
+  "digest": "6c8761d0e5a43cb38d4f4de33c8ed9dfcac892886a8ba826f08b546360450918"
 }

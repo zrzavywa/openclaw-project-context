@@ -88,6 +88,29 @@ export function selectionIdentity(ctx) {
   };
 }
 
+// The prompt hook runs for every turn, including conversations the owner does not
+// control. Agent, session and sender identifiers prove who a turn belongs to,
+// not who may read a project, so they cannot authorize project context. Only a
+// host-resolved owner signal does: the command context carries senderIsOwner,
+// and the host mints the owner-private audience for an owner direct chat. A
+// hook turn with neither signal loads nothing (fail closed).
+export function mentionAudienceAuthorized(ctx) {
+  if (ctx?.senderIsOwner === true) return true;
+  return ctx?.memoryAudience?.kind === 'owner-private';
+}
+
+// Context is read and formatted across several awaits, and the host can revoke
+// the audience meanwhile. Re-ask right before publishing instead of trusting
+// the first read.
+export function audienceStillCurrent(ctx) {
+  try {
+    ctx?.assertMemoryAudienceCurrent?.();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function assertCommandAuthority(ctx) {
   if (ctx?.senderIsOwner === true && typeof ctx.assertOwnerCurrent === 'function') {
     return ctx.assertOwnerCurrent;

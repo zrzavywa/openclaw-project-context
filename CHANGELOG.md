@@ -5,6 +5,24 @@ The repository did not use release tags for the early pilot work, so the initial
 features are grouped as an unversioned pilot instead of assigning them invented
 version numbers. Dates below are the dates recorded in the repository history.
 
+## [0.15.4] - 2026-11-24
+
+### Security
+
+- Automatic loading no longer runs for conversations the owner does not control. The prompt hook
+  read project files after checking only agent and session identifiers, which prove who a turn
+  belongs to but not who may read a project. A message naming a project in a conversation with
+  non-owner participants could therefore pull the reference and working snapshot into that
+  conversation (CWE-862, reported as MCP07 against 0.15.2). Mention loading and Codex-workspace
+  auto-linking now require a host owner signal: `senderIsOwner` when the host supplies it to the
+  hook, or the host-minted `owner-private` audience. Anything else fails closed with
+  `deny:auto-load-unauthenticated` and reads nothing, so an ambiguous mention reveals no project
+  inventory to a non-owner either. The audience is re-asked before context is published
+  (`deny:audience-changed`).
+- Explicit selections and `/project` commands are unchanged: they require command authority, and a
+  selection is bound to the session that created it.
+- New tests Z1-Z5.
+
 ## [0.15.3] - 2026-11-24
 
 ### Fixed
