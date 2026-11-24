@@ -1,12 +1,12 @@
 {
   "schema": "awf.project-release.v1",
   "name": "@zrzavywa/openclaw-project-context",
-  "version": "0.17.2",
+  "version": "0.18.0",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 33314,
-      "sha256": "63154c9bb47f70ca6747ef3920f3bddfd6c7edc6a14991967def007246989881"
+      "bytes": 34456,
+      "sha256": "5d57eb51b164bb8fdf69ed2cd7aec7da0fb94c23704e19773b41a1e1a5f1ce69"
     },
     {
       "path": "LICENSE",
@@ -40,8 +40,8 @@
     },
     {
       "path": "index.mjs",
-      "bytes": 22903,
-      "sha256": "471395e93c51a3a5a9d6b1d1b719dfc928da07e60a3cadef0973c156e4618131"
+      "bytes": 23010,
+      "sha256": "bd5fdc895e697e56cd4374d6abbb721ce0ae9e31b1f5c6fecb7ad1687e272ba3"
     },
     {
       "path": "openclaw.plugin.json",
@@ -50,8 +50,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 1670,
-      "sha256": "9abf17d6d3f3e42d67f2e6717fb413f498e0745d1edc95bb7ba7b9c3cb94d116"
+      "bytes": 1822,
+      "sha256": "ba0baacfc28ff2c61df91b2febc0f5a2fa81d62a28f8873f55723516b34881dc"
     },
     {
       "path": "project-codex-link.mjs",
@@ -74,6 +74,11 @@
       "sha256": "17607db531af4787f3de6b560c6759123914f25e9b3aab2dcca1a8aa48b40243"
     },
     {
+      "path": "project-health.mjs",
+      "bytes": 959,
+      "sha256": "9a5014d926938ad08549371f1de857d6e218443b966376ad25dd33f9610d0eda"
+    },
+    {
       "path": "project-helpers.mjs",
       "bytes": 20927,
       "sha256": "0cb997009b5a3dbd2bb7a73904990542ae27031e3752ea3b129a4e6369c1b1c2"
@@ -85,8 +90,8 @@
     },
     {
       "path": "project-memory.mjs",
-      "bytes": 14561,
-      "sha256": "363c09fa90cf6de8385bff3d64056f1df3dd301dd9a1bca74bd8bddc1521099a"
+      "bytes": 15002,
+      "sha256": "550f927ea24c71296422a05dc43839c788540252461146d44623a440394dbf3d"
     },
     {
       "path": "project-release.mjs",
@@ -104,10 +109,15 @@
       "sha256": "a26f02f8a0299f90fdc2e9b80f44f4007f93b71bfac0dfab57409315e60a3882"
     },
     {
+      "path": "project-update-check.mjs",
+      "bytes": 2357,
+      "sha256": "fc43d9efb09c5309ae89cd4945e4bf180c3edd5ee2555ef612b1f1eb4b9e1d87"
+    },
+    {
       "path": "project-verify-loaded.mjs",
       "bytes": 2067,
       "sha256": "99853ce07cb95f01db8b14fb0a5833e30e14a311d3e717f99b74369fc775d681"
     }
   ],
-  "digest": "e91b59b440dc740ac6aee7726e3839d7b6dbe19ae0391a3549082d8989df5647"
+  "digest": "2c66dfe893ffe0fdcb4bc5ed4a574ba11e48e6a44736e0b1d9965069cf2de180"
 }

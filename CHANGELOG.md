@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.18.0] - 2026-11-24
+
+### Added
+
+- `npm run update:check` compares the catalog version with the installed one and prints the exact
+  operator steps (`install`, `restart`, `verify:loaded`). Read-only; it never installs. This closes the
+  gap between "the catalog has a new version" and "the operator runs the command" without putting an
+  install back into an agent turn.
+- `npm run health` runs the session-free checks (release integrity, loaded generation, optionally
+  `check:docs` through `AWF_DOCS_DIR`) and prints one PASS/FAIL line per check. Explicitly not a
+  replacement for Doctor, which needs a session.
+- The load marker now carries `tools=… commands=… hooks=…`, so the registration counts are visible next
+  to the loaded version.
+
+### Tests
+
+- U1-U3 cover the three `update:check` outcomes and that the printed command is exact.
+
+### Fixed
+
+- Re-capturing an already quoted summary produced a second quote layer in the snapshot. `buildSnapshot`
+  now removes exactly one leading `> ` marker per line before adding its own layer, so the snapshot keeps
+  its deliberate blockquote format without nesting. Tests Q1/Q2.
+
+
 ## [0.17.2] - 2026-11-24
 
 ### Documentation

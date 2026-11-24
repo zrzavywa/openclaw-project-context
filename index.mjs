@@ -32,7 +32,10 @@ export default function register(api) {
   if (api?.pluginConfig?.enabled !== true) return;
   const log = api?.logger ?? console;
   // Loaded-version marker: the CLI verify script compares this line with the installed package.
-  try { log.info?.(`${LOAD_MARKER_PREFIX} ${LOADED_VERSION ?? 'unknown'}`); } catch { /* logging is best effort */ }
+  try {
+    const tools = Object.keys(api?.contracts?.tools ?? {}).length;
+    log.info?.(`${LOAD_MARKER_PREFIX} ${LOADED_VERSION ?? 'unknown'} tools=${tools} commands=1 hooks=1`);
+  } catch { /* logging is best effort */ }
   const selectionOptions = { namespace: 'awf-project-conversation-selection-v1', maxEntries: 2000,
     overflowPolicy: 'reject-new', defaultTtlMs: SELECTION_TTL_MS };
   const selectionStore = api.runtime.state.openKeyedStoreV2(selectionOptions);

@@ -10,9 +10,10 @@ import { validateProjectAgentConfig } from './project-config.mjs';
 import { inspectProjectHistory, quarantineProjectDirectory } from './project-lifecycle.mjs';
 import { readProjectMemoryRecords, saveApprovedProjectMemory } from './project-memory.mjs';
 import { computeReleaseManifest, inspectReleaseDirectory, verifyReleaseManifest, writeReleaseManifest } from './project-release.mjs';
-import { replaceProjectSnapshotAtomically } from './project-memory.mjs';
+import { normalizeSummaryQuoting, replaceProjectSnapshotAtomically } from './project-memory.mjs';
 import { formatCaptureDiff, PLUGIN_ROOT } from './project-helpers.mjs';
 import { describeLoadState, formatLoadStateLine, parseLoadedVersionFromLog } from './project-runtime.mjs';
+import { planUpdate } from './project-update-check.mjs';
 import { spawnSync } from 'node:child_process';
 
 const tempRoot = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'awf-project-context-')));
@@ -381,6 +382,17 @@ try {
     'LP1: assets/icon.png starts with the PNG signature');
   assert.equal(JSON.parse(readFileSync(path.join(PLUGIN_ROOT, 'package.json'), 'utf8')).files.includes('assets/icon.png'), true,
     'LP2: the icon is part of the published file list');
+  // U1-U3: update:check nennt den Operator-Befehl, ohne etwas zu installieren
+  assert.equal(planUpdate({ catalogVersion: null, installedVersion: '1.0.0' }).status, 'unknown', 'U1: missing catalog data is UNKNOWN');
+  assert.equal(planUpdate({ catalogVersion: '1.0.0', installedVersion: '1.0.0' }).status, 'current', 'U2: equal versions are current');
+  const plan = planUpdate({ catalogVersion: '1.1.0', installedVersion: '1.0.0' });
+  assert.equal(plan.status, 'available');
+  assert.match(plan.operatorSteps[0], /plugins install @zrzavywa\/openclaw-project-context@1\.1\.0 --force/u, 'U3: the exact operator command is printed');
+  assert.equal(plan.operatorSteps.length, 3, 'U3: install, restart and verify are named');
+  // Q1/Q2: der Snapshot zitiert genau eine Ebene, auch wenn die Vorlage schon zitiert war
+  assert.equal(normalizeSummaryQuoting('## Stand\n- Punkt'), '## Stand\n- Punkt', 'Q1: plain text stays plain');
+  assert.equal(normalizeSummaryQuoting('> ## Stand\n> - Punkt'), '## Stand\n- Punkt', 'Q2: one quote layer is removed');
+  assert.equal(normalizeSummaryQuoting('> > doppelt'), '> doppelt', 'Q2: only one layer is removed');
   rmSync(contextPath);
   symlinkSync(path.join(workspaces.privat, 'projects', 'missing-private-file'), contextPath);
   assert.equal(await commands.hook({}, restartedTurn), undefined, 'symlink context source is denied');

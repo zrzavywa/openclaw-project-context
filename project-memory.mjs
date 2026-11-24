@@ -149,9 +149,16 @@ function extractDecisions(summary) {
   return sections.length ? sections.join('\n').trim() : '';
 }
 
+// The snapshot renders the approved summary as a blockquote on purpose: it separates owner-approved
+// text from the snapshot metadata. An already quoted summary would gain a second layer, so exactly one
+// leading quote marker is removed before the layer is added.
+export function normalizeSummaryQuoting(summary) {
+  return String(summary).split(/\r?\n/u).map((line) => line.replace(/^>\s?/u, '')).join('\n');
+}
+
 function buildSnapshot(summary, now, reviewId, kind, existing = '') {
   const heading = `${PROJECT_ROOT_MARKER}\n\nUpdated: ${now().toISOString()}\nCapture: ${reviewId}\nType: ${kind}\n`;
-  const quotedSummary = summary.trim().split(/\r?\n/u).map((line) => line ? `> ${line}` : '>').join('\n');
+  const quotedSummary = normalizeSummaryQuoting(summary.trim()).split(/\r?\n/u).map((line) => line ? `> ${line}` : '>').join('\n');
   if (kind === 'merge' && existing.trim()) {
     const currentBody = existing.startsWith(PROJECT_ROOT_MARKER)
       ? existing.slice(existing.indexOf('## Current state') >= 0 ? existing.indexOf('## Current state') : PROJECT_ROOT_MARKER.length).trim()
