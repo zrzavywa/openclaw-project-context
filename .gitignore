@@ -1,0 +1,3 @@
+# Local working memory and capture artifacts stay out of the repository.
+memory/
+.captures/
