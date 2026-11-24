@@ -1,12 +1,12 @@
 {
   "schema": "awf.project-release.v1",
   "name": "@zrzavywa/openclaw-project-context",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 32585,
-      "sha256": "cb33710132fee4427a4db66ac2b3d41f1f24fb1661553ea357528e4d052db972"
+      "bytes": 33314,
+      "sha256": "63154c9bb47f70ca6747ef3920f3bddfd6c7edc6a14991967def007246989881"
     },
     {
       "path": "LICENSE",
@@ -15,8 +15,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 27312,
-      "sha256": "c9100f404bc0137e2ca6c5b89467b8e02f3013105bf049d1db0e21e18e41b607"
+      "bytes": 27732,
+      "sha256": "ecd73d08955984ff4b1388f8a90493dda486190e2afd7a1846b1b4a6ad7bf469"
     },
     {
       "path": "SECURITY.md",
@@ -34,6 +34,11 @@
       "sha256": "53df0577f21941de6ca424d24aed1e6f636282212d4abe3f38091da2975c70aa"
     },
     {
+      "path": "docs/UPDATING.md",
+      "bytes": 2188,
+      "sha256": "71c8cecb22c60d38908e20e40456810edc6cf92e636cb592e62e73a5e5b2a494"
+    },
+    {
       "path": "index.mjs",
       "bytes": 22903,
       "sha256": "471395e93c51a3a5a9d6b1d1b719dfc928da07e60a3cadef0973c156e4618131"
@@ -45,8 +50,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 1646,
-      "sha256": "97d12681b4cbaa58b7cd58f98e183e188c2e15b2c7e97b7e6b5f3ea980581b22"
+      "bytes": 1670,
+      "sha256": "9abf17d6d3f3e42d67f2e6717fb413f498e0745d1edc95bb7ba7b9c3cb94d116"
     },
     {
       "path": "project-codex-link.mjs",
@@ -104,5 +109,5 @@
       "sha256": "99853ce07cb95f01db8b14fb0a5833e30e14a311d3e717f99b74369fc775d681"
     }
   ],
-  "digest": "79465b2d9fd94b896c5b06d0ce28efc85a0dd5c606c8c9be71c15acfc6b52ebc"
+  "digest": "e91b59b440dc740ac6aee7726e3839d7b6dbe19ae0391a3549082d8989df5647"
 }

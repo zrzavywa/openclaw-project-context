@@ -271,6 +271,12 @@ Any agent id matching `^[a-z0-9][a-z0-9-]{0,63}$` can own projects:
 - `/project doctor` reports an `agent-baseline-derived` warning for such an agent, so an
   implicit prefix is visible instead of silent.
 
+## Updating
+
+Updates are an operator task. An install started from inside a running agent turn blocks itself: the host drain waits for that turn, the turn waits for the install, and the install aborts after the 60-second drain budget. Install and restart outside a turn, then verify with `npm run verify:loaded`.
+
+See [docs/UPDATING.md](docs/UPDATING.md) for the full procedure, the pre-flight checks and the rollback.
+
 ## Publishing
 
 The package is publishable metadata-wise (`private: false`, MIT, build metadata,

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.17.2] - 2026-11-24
+
+### Documentation
+
+- `docs/UPDATING.md` documents the update procedure as an operator task: pre-flight checks, install
+  outside a running turn, restart when the drain aborts, verification through `npm run verify:loaded`
+  and the rollback path.
+- README gained an `Updating` section that states the self-blocking property plainly: an install issued
+  from inside an agent turn waits for that turn and aborts after the 60-second drain budget, while the
+  files are replaced anyway.
+
+### Notes
+
+- No code change. The finding behind this documentation was measured on 2026-11-24, including once with
+  `reload.turnHandover` declared in the running generation; handover only happens between model steps.
+
+
 ## [0.17.1] - 2026-11-24
 
 ### Added
