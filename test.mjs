@@ -374,6 +374,13 @@ try {
     if (/setInterval\(|new Worker\(|process\.on\(/u.test(text)) offenders.push(name);
   }
   assert.deepEqual(offenders, [], 'H5: no timers, workers or process listeners; register api.lifecycle.onDispose before adding any');
+  // LP1: das Plugin-Icon liegt am vom Host erwarteten Pfad und ist ein PNG
+  const iconPath = path.join(PLUGIN_ROOT, 'assets', 'icon.png');
+  const icon = readFileSync(iconPath);
+  assert.deepEqual([...icon.subarray(0, 8)], [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+    'LP1: assets/icon.png starts with the PNG signature');
+  assert.equal(JSON.parse(readFileSync(path.join(PLUGIN_ROOT, 'package.json'), 'utf8')).files.includes('assets/icon.png'), true,
+    'LP2: the icon is part of the published file list');
   rmSync(contextPath);
   symlinkSync(path.join(workspaces.privat, 'projects', 'missing-private-file'), contextPath);
   assert.equal(await commands.hook({}, restartedTurn), undefined, 'symlink context source is denied');

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.17.1] - 2026-11-24
+
+### Added
+
+- `assets/icon.png` (128x128 RGBA). The host reads the plugin icon from that path relative to the
+  plugin root; there is no manifest field and a missing icon is ignored. Generated with a minimal
+  PNG encoder because the host has no image tooling.
+- Tests LP1 (PNG signature at the expected path) and LP2 (the icon is part of `files`).
+
+### Compatibility finding
+
+- The compatibility draft is answered: `openKeyedStoreV2` is the current API, its synchronous
+  predecessor is deprecated since 2026-09-11 with compatibility ending 2026-12-31 and removal in the
+  first stable January 2027 release. Lowering the peer floor would mean a second state path on a store
+  that is being removed. The floor stays; the reason is documented instead of assumed.
+
+
 ## [0.17.0] - 2026-11-24
 
 ### Changed

@@ -1,6 +1,6 @@
 {
   "name": "@zrzavywa/openclaw-project-context",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "private": false,
   "license": "MIT",
   "description": "Agent-scoped project context for OpenClaw",
@@ -43,6 +43,7 @@
     "openclaw.plugin.json",
     "README.md",
     "CHANGELOG.md",
+    "assets/icon.png",
     "LICENSE",
     "SECURITY.md"
   ],
