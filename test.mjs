@@ -364,6 +364,16 @@ try {
   const statusRun = spawnSync(process.execPath, [path.join(PLUGIN_ROOT, 'project-status.mjs')], { encoding: 'utf8',
     env: { ...process.env, OPENCLAW_STATE_DIR: statusRoot } });
   assert.match(statusRun.stdout, /Geladen\s+9\.9\.9/u, 'G6: status reports the loaded version from the marker');
+  // H4/H5: Manifest deklariert den Turn-Handover nur, solange keine Ressourcen laufen
+  const pluginManifest = JSON.parse(readFileSync(path.join(PLUGIN_ROOT, 'openclaw.plugin.json'), 'utf8'));
+  assert.equal(pluginManifest.reload?.turnHandover, true, 'H4: manifest declares reload.turnHandover');
+  const sources = readdirSync(PLUGIN_ROOT).filter((name) => name.endsWith('.mjs'));
+  const offenders = [];
+  for (const name of sources) {
+    const text = readFileSync(path.join(PLUGIN_ROOT, name), 'utf8');
+    if (/setInterval\(|new Worker\(|process\.on\(/u.test(text)) offenders.push(name);
+  }
+  assert.deepEqual(offenders, [], 'H5: no timers, workers or process listeners; register api.lifecycle.onDispose before adding any');
   rmSync(contextPath);
   symlinkSync(path.join(workspaces.privat, 'projects', 'missing-private-file'), contextPath);
   assert.equal(await commands.hook({}, restartedTurn), undefined, 'symlink context source is denied');

@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.17.0] - 2026-11-24
+
+### Changed
+
+- `openclaw.plugin.json` declares `reload.turnHandover: true`. A plugin update now hands running turns
+  over at the next model step instead of waiting out the drain budget. Today the 60-second drain
+  aborted twice and made a gateway restart look mandatory; the reload that did apply in place took
+  effect only because no turn happened to block it.
+
+### Verified preconditions
+
+- No timers, workers or process listeners: the only registration is `api.on('before_prompt_build')`,
+  which the host re-registers on load. Nothing exists for `api.lifecycle.onDispose` to release.
+- All cross-call state lives in `api.runtime.state` keyed stores (nine usages), not in process memory.
+- The codex-link cache is derived state: a miss falls through to disk, so a new generation rebuilds it.
+- No context engine is registered.
+
+### Tests
+
+- H4 asserts the manifest declares `reload.turnHandover`.
+- H5 fails if a shipped module introduces a timer, a worker or a `process.on` handler, with the message
+  to register `api.lifecycle.onDispose` first. The declaration stays honest only while that holds.
+- H1/H2 (a reload during a running turn completes and the turn continues on the new version) can only be
+  observed on the host and remain unproven until the next installation.
+
+
 ## [0.16.2] - 2026-11-24
 
 ### Added

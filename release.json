@@ -1,12 +1,12 @@
 {
   "schema": "awf.project-release.v1",
   "name": "@zrzavywa/openclaw-project-context",
-  "version": "0.16.2",
+  "version": "0.17.0",
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 30486,
-      "sha256": "bcbe8a1e35e3a7b468f0b96de40131191de53407bd01b8bdc01700c8ba300ee7"
+      "bytes": 31796,
+      "sha256": "fe0786bb877ee9f534a731cef3e081374f9eb3d244fe3552bc10b997e0666b61"
     },
     {
       "path": "LICENSE",
@@ -35,13 +35,13 @@
     },
     {
       "path": "openclaw.plugin.json",
-      "bytes": 942,
-      "sha256": "49b5fcc08babb3f6ce7d758ab85b2b80a9b6e20e3f0fb48cacceddb618627a48"
+      "bytes": 986,
+      "sha256": "9e0309bdaf2bac89fea0ce1cee33d7162c9516441d9178204bd353aa2ed1dc73"
     },
     {
       "path": "package.json",
       "bytes": 1623,
-      "sha256": "47ab1364e0c0335503253168de4e051826f6911119a4405ec89b3797fc3e2b45"
+      "sha256": "817cde281d46ef19accad22e0b8a048bc7b78ddade6fd61039827059ce4064b9"
     },
     {
       "path": "project-codex-link.mjs",
@@ -99,5 +99,5 @@
       "sha256": "99853ce07cb95f01db8b14fb0a5833e30e14a311d3e717f99b74369fc775d681"
     }
   ],
-  "digest": "eb964ab3bce002b609e22da0cf51ba7f09bcb491e87c9e2acbfc97b43949bcd0"
+  "digest": "cde852c5de259bf0542175db6a0a0af3da34e5f719555dec96d0a94627c5a210"
 }

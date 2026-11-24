@@ -21,6 +21,9 @@
       "hook"
     ]
   },
+  "reload": {
+    "turnHandover": true
+  },
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
