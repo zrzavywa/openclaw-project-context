@@ -338,6 +338,32 @@ try {
   const failRun = runVerify();
   assert.equal(failRun.status, 1, 'G3: older marker fails');
   assert.match(failRun.stdout, /FAIL/u);
+  // T1–T5: check:docs findet Versionsreste in Prosa und respektiert die Ausnahmen
+  const docsRoot = path.join(tempRoot, 'docs-check');
+  mkdirSync(docsRoot, { recursive: true });
+  const checkScript = path.join(PLUGIN_ROOT, 'check-docs.mjs');
+  const runDocs = (file) => spawnSync(process.execPath, [checkScript, file], { encoding: 'utf8' });
+  writeFileSync(path.join(docsRoot, 'prose.md'), '# Titel\n\nDie Version 0.15.0 ist hier fest verdrahtet.\n');
+  const proseRun = runDocs(path.join(docsRoot, 'prose.md'));
+  assert.equal(proseRun.status, 1, 'T1: a version in prose fails');
+  assert.match(proseRun.stdout, /prose\.md:3/u, 'T1: the finding names file and line');
+  writeFileSync(path.join(docsRoot, 'changelog.md'), '# Titel\n\n## Dokument-Change-Log\n\n- 2026-11-24 — Version 0.15.0 dokumentiert.\n');
+  assert.equal(runDocs(path.join(docsRoot, 'changelog.md')).status, 0, 'T2: the change log is exempt');
+  writeFileSync(path.join(docsRoot, 'fence.md'), '# Titel\n\n```\nversion: 0.15.0\n```\n');
+  assert.equal(runDocs(path.join(docsRoot, 'fence.md')).status, 0, 'T3: code blocks are exempt');
+  writeFileSync(path.join(docsRoot, 'clean.md'), '# Titel\n\nKeine Versionsangabe.\n');
+  assert.equal(runDocs(path.join(docsRoot, 'clean.md')).status, 0, 'T4: clean prose passes');
+  writeFileSync(path.join(docsRoot, 'table.md'), '| Quelle | Stand 0.15.0 |\n');
+  assert.equal(runDocs(path.join(docsRoot, 'table.md')).status, 0, 'T5: table rows with dated Stand columns are exempt');
+  // G6: npm run status zeigt die geladene Version aus dem Logmarker (Regression 0.16.2)
+  const statusRoot = path.join(tempRoot, 'status-state');
+  mkdirSync(path.join(statusRoot, 'extensions', 'awf-project-context'), { recursive: true });
+  mkdirSync(path.join(statusRoot, 'logs'), { recursive: true });
+  writeFileSync(path.join(statusRoot, 'extensions', 'awf-project-context', 'package.json'), JSON.stringify({ version: '9.9.9' }));
+  writeFileSync(path.join(statusRoot, 'logs', 'openclaw-2026-11-24.log'), 'x\nawf-project-context loaded 9.9.9\n');
+  const statusRun = spawnSync(process.execPath, [path.join(PLUGIN_ROOT, 'project-status.mjs')], { encoding: 'utf8',
+    env: { ...process.env, OPENCLAW_STATE_DIR: statusRoot } });
+  assert.match(statusRun.stdout, /Geladen\s+9\.9\.9/u, 'G6: status reports the loaded version from the marker');
   rmSync(contextPath);
   symlinkSync(path.join(workspaces.privat, 'projects', 'missing-private-file'), contextPath);
   assert.equal(await commands.hook({}, restartedTurn), undefined, 'symlink context source is denied');

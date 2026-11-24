@@ -46,7 +46,7 @@ function loadedVersion() {
   const stateDir = process.env.OPENCLAW_STATE_DIR || path.join(os.homedir(), '.openclaw');
   const logsRoot = path.join(stateDir, 'logs');
   let files = [];
-  try { files = readdirSync(logsRoot).filter((n) => /^openclaw-\\d{4}-\\d{2}-\\d{2}\\.log$/u.test(n)).sort().reverse().slice(0, 2); }
+  try { files = readdirSync(logsRoot).filter((n) => /^openclaw-\d{4}-\d{2}-\d{2}\.log$/u.test(n)).sort().reverse().slice(0, 2); }
   catch { return 'UNKNOWN'; }
   for (const name of files) {
     try {
