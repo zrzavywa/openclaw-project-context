@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.16.0] - 2026-11-24
+
+### Fixed
+
+- A capture request that never reaches the tool is no longer reported as "nothing requested".
+  `/project capture` now records an `awaiting-summary` marker; if the summary text is never passed
+  to `awf_project` with `action=capture-preview`, `/project capture confirm` names the request time,
+  the project and the cause instead of claiming no summary was waiting. Nothing is written in that case.
+- New tests C1-C5 cover the unfilled request, the unchanged project files, and the fact that a marker
+  neither blocks a later preview nor survives a successful confirmation.
+
 Notable changes to the OpenClaw Project Context plugin are documented here.
 The repository did not use release tags for the early pilot work, so the initial
 features are grouped as an unversioned pilot instead of assigning them invented

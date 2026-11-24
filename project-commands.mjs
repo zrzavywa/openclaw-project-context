@@ -974,6 +974,26 @@ export function prepareWorkspaceProjectCommands({ selectionStore, selectionStore
       if (!identity) return { text: 'Capture und Abschluss erfordern eine aktive Unterhaltung.' };
       const selected = await selectionStore.lookup(identity.key);
       if (!isSelectionCurrent(selected, identity, now().getTime())) return { text: 'Wähle zuerst ein Projekt für Capture oder Abschluss.' };
+      // C1: Anforderungsmarker setzen, damit ein fehlender Vorschau-Aufruf diagnostizierbar bleibt.
+      // Ein bereits gueltiger Vorschauentwurf wird nicht ueberschrieben.
+      try {
+        const assertCurrent = assertCommandAuthority(ctx);
+        if (assertCurrent) {
+          const store = reviewStoreForCommand(assertCurrent);
+          const observed = await store.observe(identity.key);
+          assertCurrent();
+          const existing = observed.value;
+          const hasPreview = Boolean(existing) && existing.schema === 'awf.project-summary-review.v1' &&
+            existing.phase !== 'awaiting-summary' && existing.agentId === ctx.agentId &&
+            existing.sessionKeyDigest === identity.sessionKeyDigest && existing.expiresAt > now().getTime();
+          if (!hasPreview) {
+            await store.compareAndApply(identity.key, observed.comparison, { operation: 'update', action: 'set', value: {
+              schema: 'awf.project-summary-review.v1', phase: 'awaiting-summary', agentId: ctx.agentId,
+              sessionKeyDigest: identity.sessionKeyDigest, projectId: selected.projectId, displayId: selected.displayId,
+              kind, requestedAt: now().getTime(), expiresAt: now().getTime() + REVIEW_TTL_MS } });
+          }
+        }
+      } catch { /* Der Marker ist Diagnose, kein Blocker fuer den Auftrag. */ }
       const mode = kind === 'close' ? 'Abschlusszusammenfassung' : 'Gesprächszusammenfassung';
       return { text: `Erstelle eine kompakte ${mode} als NEUEN aktuellen Arbeitsstand für das ausgewählte Projekt. Nutze nur den in diesem Gespräch sichtbaren Verlauf einschließlich des geladenen aktuellen Projektkontexts. Übernimm weiterhin gültige Ziele, Regeln und Entscheidungen, entferne erledigte oder überholte Punkte und hänge keine alten Abschnitte an. Schreibe möglichst unter 4.000 UTF-8-Bytes. Verwende die Überschriften „## Aktueller Stand“, „## Weiterhin gültige Entscheidungen“, „## Neue Beschlüsse dieses Gesprächs“ und „## Offene Punkte“. Beschlüsse müssen als bestätigte Entscheidungen gekennzeichnet sein; kennzeichne Unsicherheiten und erfinde nichts. Schreibe keine Geheimnisse, Zugangsdaten oder unnötigen personenbezogenen Angaben ab. Rufe danach awf_project mit action=${kind === 'close' ? 'close-preview' : 'capture-preview'} und dem Zusammenfassungstext auf. Das ist nur ein Entwurf; speichere nichts und bestätige nichts automatisch. Zeige die Vorschau an und warte auf /project capture confirm oder /project capture cancel.` , continueAgent: true };
     },
@@ -992,7 +1012,7 @@ export function prepareWorkspaceProjectCommands({ selectionStore, selectionStore
         const captureDiff = formatCaptureDiff(project.kontext ?? '', summary);
         const pending = { schema: 'awf.project-summary-review.v1', agentId: ctx.agentId,
           sessionKeyDigest: identity.sessionKeyDigest, projectId: selected.projectId, displayId: selected.displayId,
-          kind, summary, baseContextDigest: sha256(Buffer.from(project.kontext ?? '', 'utf8')),
+          phase: 'preview', kind, summary, baseContextDigest: sha256(Buffer.from(project.kontext ?? '', 'utf8')),
           reviewId: sha256(Buffer.from(`${identity.key}\0${selected.projectId}\0${now().getTime()}\0${summary}`, 'utf8')).slice(0, 24),
           createdAt: now().getTime(), expiresAt: now().getTime() + REVIEW_TTL_MS };
         const store = reviewStoreForCommand(assertCurrent);
@@ -1013,9 +1033,17 @@ export function prepareWorkspaceProjectCommands({ selectionStore, selectionStore
         const store = reviewStoreForCommand(assertCurrent);
         const observed = await store.observe(identity.key);
         const pending = observed.value;
+        const awaiting = Boolean(pending) && pending.schema === 'awf.project-summary-review.v1' &&
+          pending.phase === 'awaiting-summary' && pending.agentId === ctx.agentId &&
+          pending.sessionKeyDigest === identity.sessionKeyDigest && pending.expiresAt > now().getTime() &&
+          ['capture', 'close'].includes(pending.kind);
+        if (awaiting) {
+          const when = new Date(pending.requestedAt ?? pending.createdAt).toISOString().replace('T', ' ').slice(0, 16);
+          return { text: `**Capture angefordert, aber keine Vorschau erzeugt**\n\n- Angefordert: ${when} UTC\n- Projekt: ${pending.displayId}\n- Ursache: der Zusammenfassungstext wurde nicht an \`awf_project\` mit \`action=${pending.kind === 'close' ? 'close-preview' : 'capture-preview'}\` übergeben.\n\nEs wurde nichts gespeichert. Führe /project capture erneut aus und übergib die Zusammenfassung im selben Zug an das Werkzeug.` };
+        }
         if (!pending || pending.schema !== 'awf.project-summary-review.v1' || pending.agentId !== ctx.agentId ||
             pending.sessionKeyDigest !== identity.sessionKeyDigest || pending.expiresAt <= now().getTime() ||
-            !['capture', 'close'].includes(pending.kind)) return { text: 'Keine aktuelle Projektzusammenfassung wartet auf Bestätigung.' };
+            !['capture', 'close'].includes(pending.kind)) return { text: 'Keine aktuelle Projektzusammenfassung wartet auf Bestätigung. Starte mit /project capture.' };
         const selected = await selectionStore.lookup(identity.key);
         if (!isSelectionCurrent(selected, identity, now().getTime()) || selected.projectId !== pending.projectId || selected.displayId !== pending.displayId) {
           return { text: 'The active project changed; the draft was not saved.' };

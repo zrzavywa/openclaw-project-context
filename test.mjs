@@ -274,6 +274,22 @@ try {
   assert.equal(readFileSync(contextPath, 'utf8').includes('This draft must be discarded'), false,
     'cancel discards a draft without writing project files');
 
+// C1–C5: Capture-Anforderung ohne Vorschau bleibt diagnostizierbar (0.16.0)
+  const captureRequest = await commands.prepareSummary(main, 'capture');
+  assert.match(captureRequest.text, /Zusammenfassung/u, 'C1: capture request returns the summary instruction');
+  const notFilled = await commands.confirmSummary(main);
+  assert.match(notFilled.text, /Capture angefordert, aber keine Vorschau erzeugt/u,
+    'C1/C3: an unfilled request is named instead of pretending nothing happened');
+  assert.match(notFilled.text, /Ursache/u, 'C3: the cause is named');
+  assert.equal(readFileSync(contextPath, 'utf8'), afterCapture, 'C3: an unfilled request writes nothing');
+
+  const filledDraft = await commands.proposeSummary(main, '## Aktueller Stand\n- Zweiter Capture nach Anforderung.');
+  assert.match(filledDraft.text, /Vorschau/u, 'C4: the request marker does not block a preview');
+  assert.match((await commands.confirmSummary(main)).text, /freigegebene Zusammenfassung wurde der Historie hinzugefügt/u,
+    'C4: the draft can still be confirmed after a request marker');
+  assert.match((await commands.confirmSummary(main)).text, /Keine aktuelle Projektzusammenfassung/u,
+    'C5: no request residue survives a successful confirmation');
+
   await commands.proposeSummary(main, 'Expired summary.');
   currentTime = new Date(currentTime.getTime() + 15 * 60 * 1000 + 1);
   assert.match((await commands.confirmSummary(main)).text, /Keine aktuelle Projektzusammenfassung/u,
