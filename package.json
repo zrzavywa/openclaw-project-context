@@ -1,0 +1,60 @@
+{
+  "name": "@zrzavywa/openclaw-project-context",
+  "version": "0.15.3",
+  "private": false,
+  "license": "MIT",
+  "description": "Agent-scoped project context for OpenClaw",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zrzavywa/openclaw-project-context.git"
+  },
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "project-context",
+    "agent-workspace"
+  ],
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs",
+    "test:gateway": "bash gateway-smoke.sh",
+    "check:changelog": "node check-changelog.mjs",
+    "release:manifest": "node project-release.mjs --write .",
+    "release:verify": "node project-release.mjs --verify .",
+    "status": "node project-status.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "project-commands.mjs",
+    "project-helpers.mjs",
+    "project-creation.mjs",
+    "project-lifecycle.mjs",
+    "project-config.mjs",
+    "project-codex-link.mjs",
+    "project-memory.mjs",
+    "project-release.mjs",
+    "project-status.mjs",
+    "release.json",
+    "openclaw.plugin.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "peerDependencies": {
+    "openclaw": ">=2026.11.6"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.mjs"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.11.6",
+      "minGatewayVersion": "2026.11.6"
+    },
+    "build": {
+      "openclawVersion": "2026.11.6",
+      "pluginSdkVersion": "2026.11.6"
+    }
+  }
+}
